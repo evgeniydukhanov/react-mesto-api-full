@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const AuthorizationError = require('../errors/AuthorizationError');
+require('dotenv').config();
 
+const { JWT_SECRET_KEY } = process.env;
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const cookieAuthorization = req.cookies.jwt;
@@ -9,7 +11,7 @@ module.exports = (req, res, next) => {
   }
   let payload;
   try {
-    payload = jwt.verify(cookieAuthorization, 'super-secret-key');
+    payload = jwt.verify(cookieAuthorization, JWT_SECRET_KEY);
   } catch (err) {
     return next(new AuthorizationError('Ошибка авторизации'));
   }

@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require('express');
 
 const { celebrate, Joi, errors } = require('celebrate');
@@ -37,6 +35,7 @@ const allowedCors = [
   'https://localhost:3000',
   'https://127.0.0.1:3000',
   'http://mesto-backend.nomoredomains.work',
+  'http://localhost:3030',
 ];
 
 // eslint-disable-next-line prefer-arrow-callback
