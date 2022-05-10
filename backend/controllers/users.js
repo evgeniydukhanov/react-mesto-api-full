@@ -6,7 +6,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ConflictError = require('../errors/ConflictError');
 
-const { JWT_SECRET_KEY } = process.env;
+const { JWT_SECRET_KEY = 'test' } = process.env;
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -51,7 +51,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь с указанным ID не найден'));
+        return next(new NotFoundError('Пользователь с указанным ID не найден'));
       }
       return res.send(user);
     })
@@ -111,7 +111,7 @@ module.exports.getMe = (req, res, next) => {
   User.find({ _id })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Указанный пользователь не найден'));
+        return next(new NotFoundError('Указанный пользователь не найден'));
       }
       return res.send(user);
     })
