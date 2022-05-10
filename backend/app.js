@@ -4,7 +4,7 @@ const express = require('express');
 
 const { celebrate, Joi, errors } = require('celebrate');
 
-const PORT = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
