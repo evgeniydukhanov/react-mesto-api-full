@@ -2,7 +2,7 @@ const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const ValidationError = require('../errors/ValidationError');
-const CastError = require('../errors/CastError');
+// const CastError = require('../errors/CastError');
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -24,24 +24,41 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
+// module.exports.deleteCard = (req, res, next) => {
+//   Card.findByIdAndRemove(req.params.cardId)
+//     .then((card) => {
+//       if (!card) {
+//         next(new NotFoundError('Карточка не найдена'));
+//       }
+//       if (req.user._id !== card.owner._id.toString()) {
+//         next(new ForbiddenError('Вы не можете удалить чужую карточку'));
+//       }
+//       return res.send(card);
+//     })
+//     .catch((err) => {
+//       if (err.name === 'CastError') {
+//         next(new CastError('Некорректный id карточки'));
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
+
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params._id)
+    .orFail()
+    .catch(() => new NotFoundError('Карточка не найдена'))
     .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка не найдена'));
+      if (req.user._id !== card.owner.toString()) {
+        throw new ForbiddenError('Вы не можете удалить чужую карточку');
       }
-      if (req.user._id !== card.owner._id.toString()) {
-        next(new ForbiddenError('Вы не можете удалить чужую карточку'));
-      }
-      return res.send(card);
+      Card.findByIdAndDelete(req.params._id)
+        .then((cardData) => {
+          res.send({ data: cardData });
+        })
+        .catch(next);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new CastError('Некорректный id карточки'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
