@@ -45,14 +45,16 @@ module.exports.getCards = (req, res, next) => {
 // };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params._id)
+  // console.log(req.params);
+  Card.findById(req.params.cardId)
     .orFail()
     .catch(() => new NotFoundError('Карточка не найдена'))
     .then((card) => {
+      console.log(card);
       if (req.user._id !== card.owner.toString()) {
         throw new ForbiddenError('Вы не можете удалить чужую карточку');
       }
-      Card.findByIdAndDelete(req.params._id)
+      Card.findByIdAndDelete(req.params.cardId)
         .then((cardData) => {
           res.send({ data: cardData });
         })
